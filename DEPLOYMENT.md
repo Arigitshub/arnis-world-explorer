@@ -26,6 +26,17 @@ Use this when the account billing issue is fixed.
 - Site root is `public/`
 - Homepage should be `https://arigitshub.github.io/arnis-world-explorer/`
 
+### GitHub Pages Without Actions
+
+This repo also contains a `docs/` mirror of the static site.
+
+If Actions are blocked but GitHub Pages branch publishing still works, set:
+
+- Source branch: `main`
+- Folder: `/docs`
+
+This path avoids the Actions workflow entirely.
+
 ### Netlify
 
 Use a static site deploy with:

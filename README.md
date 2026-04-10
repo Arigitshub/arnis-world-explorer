@@ -3,6 +3,7 @@
 [![Repo](https://img.shields.io/badge/GitHub-Arigitshub%2Farnis--world--explorer-181717?logo=github)](https://github.com/Arigitshub/arnis-world-explorer)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 [![Pages](https://img.shields.io/badge/GitHub%20Pages-configured-blue)](https://arigitshub.github.io/arnis-world-explorer/)
+[![Live Demo](https://img.shields.io/badge/live-surge-0f172a)](https://arnis-world-explorer-20260410.surge.sh)
 
 Browser-based first-person explorer for an Arnis-generated world.
 
@@ -48,6 +49,7 @@ The explorer approximates terrain from `arnis_world_map.png` and uses `metadata.
 - `PULL_REQUEST_TEMPLATE.md`
 - `SECURITY.md`
 - `LICENSE`
+- `docs/`
 - `public/index.html`
 - `public/arnis_world_map.png`
 - `public/metadata.json`
@@ -98,6 +100,8 @@ If Python is available, the script starts a local static server on `http://local
 ## GitHub Pages
 
 The repository is set up for GitHub Pages deployment through Actions.
+
+It also contains a `/docs` mirror of the static app so Pages can be switched to branch-based publishing if Actions are unavailable.
 
 When the repo exists on GitHub:
 
