@@ -11,6 +11,7 @@ This project is a polished local viewer for an exported Arnis map image and meta
 ## Live Links
 
 - Repo: `https://github.com/Arigitshub/arnis-world-explorer`
+- Live demo: `https://arnis-world-explorer-20260410.surge.sh`
 - Intended Pages URL: `https://arigitshub.github.io/arnis-world-explorer/`
 
 Note: GitHub reported that workflow runs are currently blocked by an account billing issue, so the Pages deploy will not go live until that account issue is resolved.

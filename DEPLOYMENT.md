@@ -6,6 +6,18 @@ The repo is configured for GitHub Pages through Actions, but GitHub reported tha
 
 ## Hosting Options
 
+### Surge
+
+The site is already published here:
+
+- `https://arnis-world-explorer-20260410.surge.sh`
+
+Example publish command:
+
+```powershell
+surge D:\arnis-world-explorer\public arnis-world-explorer-20260410.surge.sh
+```
+
 ### GitHub Pages
 
 Use this when the account billing issue is fixed.
