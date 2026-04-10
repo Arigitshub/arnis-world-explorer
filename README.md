@@ -1,8 +1,19 @@
 # Arnis World Explorer
 
+[![Repo](https://img.shields.io/badge/GitHub-Arigitshub%2Farnis--world--explorer-181717?logo=github)](https://github.com/Arigitshub/arnis-world-explorer)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+[![Pages](https://img.shields.io/badge/GitHub%20Pages-configured-blue)](https://arigitshub.github.io/arnis-world-explorer/)
+
 Browser-based first-person explorer for an Arnis-generated world.
 
 This project is a polished local viewer for an exported Arnis map image and metadata. It is meant for cases where you have an Arnis-generated world folder but do not want to open it in Minecraft itself.
+
+## Live Links
+
+- Repo: `https://github.com/Arigitshub/arnis-world-explorer`
+- Intended Pages URL: `https://arigitshub.github.io/arnis-world-explorer/`
+
+Note: GitHub reported that workflow runs are currently blocked by an account billing issue, so the Pages deploy will not go live until that account issue is resolved.
 
 ## What it is
 
@@ -25,6 +36,7 @@ The explorer approximates terrain from `arnis_world_map.png` and uses `metadata.
 
 - `.github/workflows/deploy-pages.yml`
 - `.github/ISSUE_TEMPLATE/`
+- `DEPLOYMENT.md`
 - `CONTRIBUTING.md`
 - `CODE_OF_CONDUCT.md`
 - `PULL_REQUEST_TEMPLATE.md`
@@ -74,6 +86,8 @@ When the repo exists on GitHub:
 3. The workflow in `.github/workflows/deploy-pages.yml` will publish the contents of `public/`
 
 The published site entrypoint is `public/index.html`.
+
+If GitHub Actions are unavailable, see `DEPLOYMENT.md` for Netlify, Cloudflare Pages, and local static server options.
 
 ## Controls
 

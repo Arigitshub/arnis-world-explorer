@@ -22,10 +22,11 @@
     .label{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
     .value{margin-top:4px;font-size:.92rem;line-height:1.35}
     .bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    button,label.file{appearance:none;border:1px solid rgba(96,165,250,.26);background:linear-gradient(180deg,rgba(37,99,235,.28),rgba(15,23,42,.92));color:var(--text);padding:10px 12px;border-radius:13px;font:inherit;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+    button,label.file{appearance:none;border:1px solid rgba(96,165,250,.26);background:linear-gradient(180deg,rgba(37,99,235,.28),rgba(15,23,42,.92));color:var(--text);padding:10px 12px;border-radius:13px;font:inherit;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease,opacity .16s ease}
     button:hover,label.file:hover{transform:translateY(-1px);border-color:rgba(96,165,250,.55);box-shadow:0 10px 24px rgba(37,99,235,.18)}
     button.secondary{background:linear-gradient(180deg,rgba(34,197,94,.24),rgba(15,23,42,.92));border-color:rgba(74,222,128,.28)}
     button.pink{background:linear-gradient(180deg,rgba(244,63,94,.22),rgba(15,23,42,.92));border-color:rgba(251,113,133,.28)}
+    button:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
     #cross{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;pointer-events:none;z-index:2;opacity:.92}
     #cross:before,#cross:after{content:"";position:absolute;background:#ffffffd9;box-shadow:0 0 10px rgba(255,255,255,.38)}#cross:before{left:8px;top:0;width:2px;height:18px}#cross:after{left:0;top:8px;width:18px;height:2px}
     #msg{position:absolute;right:16px;bottom:16px;z-index:3;max-width:min(420px,calc(100vw - 32px));padding:12px 14px;color:var(--muted);font-size:.92rem;line-height:1.45}
@@ -61,11 +62,12 @@
         <div class="cell"><div class="label">Mode</div><div class="value" id="mode">Hover walk</div></div>
       </div>
       <div class="bar">
-        <button id="enterWorld" class="secondary">Enter World</button>
+        <button id="enterWorld" class="secondary" disabled>Enter World</button>
         <button id="capture">Capture Mouse</button>
         <button id="reset">Reset</button>
         <button id="fly" class="secondary">Toggle Fly</button>
       </div>
+      <p class="tiny" id="loadState">Map state: waiting for load</p>
       <p class="hint">Move with <code>W A S D</code>, look with the mouse, sprint with <code>Shift</code>, rise/fall in fly mode with <code>Space</code> / <code>Ctrl</code>.</p>
     </section>
 
@@ -100,7 +102,7 @@
               </div>
               <div class="bar">
                 <button id="loadPicked" class="secondary">Load Selected Files</button>
-                <button id="menuEnter" class="secondary">Enter Loaded World</button>
+                <button id="menuEnter" class="secondary" disabled>Enter Loaded World</button>
                 <button id="closeMenu" class="pink">Close Menu</button>
               </div>
               <p class="tiny" id="pickedState">No files picked yet.</p>
@@ -117,6 +119,7 @@
     const $=id=>document.getElementById(id),view=$("view"),ctx=view.getContext("2d"),mini=$("mini"),mctx=mini.getContext("2d"),buf=document.createElement("canvas"),bctx=buf.getContext("2d",{willReadFrequently:true}),img=new Image();
     const clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),lerp=(a,b,t)=>a+(b-a)*t,rgbMul=(r,g,b,m)=>`rgb(${clamp(Math.round(r*m),0,255)},${clamp(Math.round(g*m),0,255)},${clamp(Math.round(b*m),0,255)})`,note=t=>$("msg").innerHTML=t;
     function resize(){const d=Math.min(devicePixelRatio||1,2);view.width=innerWidth*d;view.height=innerHeight*d;view.style.width=innerWidth+"px";view.style.height=innerHeight+"px";ctx.setTransform(1,0,0,1,0,0);ctx.scale(d,d)}
+    function setReadyUi(ready,label){state.ready=ready;$("enterWorld").disabled=!ready;$("menuEnter").disabled=!ready;$("loadState").textContent=`Map state: ${label}`}
     function updateHud(){const m=state.meta,mcX=lerp(m.minMcX,m.maxMcX,cam.x/m.w),mcZ=lerp(m.minMcZ,m.maxMcZ,cam.z/m.h),lat=lerp(m.maxLat,m.minLat,cam.z/m.h),lon=lerp(m.minLon,m.maxLon,cam.x/m.w);$("mc").textContent=`X ${mcX.toFixed(0)}, Z ${mcZ.toFixed(0)}`;$("geo").textContent=`${lat.toFixed(6)}, ${lon.toFixed(6)}`;$("alt").textContent=`${cam.y.toFixed(1)} browser units`;$("mode").textContent=cam.fly?"Free fly":"Hover walk"}
     function pcol(px,pz){const m=state.meta,ix=clamp(px|0,0,m.w-1),iz=clamp(pz|0,0,m.h-1),o=(iz*m.w+ix)*4,d=state.pix.data;return[d[o],d[o+1],d[o+2]]}
     function inferHeight(r,g,b){const mx=Math.max(r,g,b),mn=Math.min(r,g,b),sat=mx-mn,lum=(.2126*r+.7152*g+.0722*b)/255,blue=b-(r+g)*.5,green=g-(r+b)*.5;if(blue>18&&b>90)return 2+lum*1.5;let h=Math.pow(lum,1.5)*180;if(green>16)h+=green*.9;return h*(sat<20?.42:1)+sat*.12}
@@ -144,8 +147,8 @@
     function frame(t){const dt=clamp((t-state.last)/1000,.001,.033);state.last=t;if(state.started&&state.ready){move(dt);updateHud();drawSky();drawTerrain();drawFog();drawMini()}requestAnimationFrame(frame)}
     function setBg(url){$("bg").style.backgroundImage=`url("${url}")`;$("bg").style.opacity=.18}
     async function readJson(file){return JSON.parse(await file.text())}
-    async function loadWorld(mapUrl,meta){state.meta={...state.meta,...meta};note("Loading world image.");img.src="";await new Promise((ok,bad)=>{img.onload=ok;img.onerror=bad;img.src=mapUrl});state.meta.w=img.naturalWidth;state.meta.h=img.naturalHeight;buf.width=img.naturalWidth;buf.height=img.naturalHeight;bctx.clearRect(0,0,buf.width,buf.height);bctx.drawImage(img,0,0);state.pix=bctx.getImageData(0,0,buf.width,buf.height);setBg(mapUrl);buildTerrain();state.ready=true;updateHud();const enter=$("menuEnter");if(enter)enter.textContent="Enter Loaded World";note("World loaded. Click Enter Loaded World or Enter World.");}
-    async function tryAuto(){try{let meta={...DEFAULT_WORLD};try{const r=await fetch("metadata.json");if(r.ok){const j=await r.json();meta={...meta,...{minMcX:j.minMcX,maxMcX:j.maxMcX,minMcZ:j.minMcZ,maxMcZ:j.maxMcZ,minLat:j.minGeoLat,maxLat:j.maxGeoLat,minLon:j.minGeoLon,maxLon:j.maxGeoLon}}}}catch{}await loadWorld("arnis_world_map.png",meta);note("Auto-load succeeded. Click Start Explorer.");return true}catch(err){console.error(err);note("Auto-load failed. Use the Manual Map Loader and pick <code>arnis_world_map.png</code>.");return false}}
+    async function loadWorld(mapUrl,meta){state.meta={...state.meta,...meta};setReadyUi(false,"loading");note("Loading world image.");img.src="";await new Promise((ok,bad)=>{img.onload=ok;img.onerror=bad;img.src=mapUrl});state.meta.w=img.naturalWidth;state.meta.h=img.naturalHeight;buf.width=img.naturalWidth;buf.height=img.naturalHeight;bctx.clearRect(0,0,buf.width,buf.height);bctx.drawImage(img,0,0);state.pix=bctx.getImageData(0,0,buf.width,buf.height);setBg(mapUrl);buildTerrain();updateHud();$("menuEnter").textContent="Enter Loaded World";setReadyUi(true,"loaded");note("World loaded. Click Enter Loaded World or Enter World.");}
+    async function tryAuto(){try{let meta={...DEFAULT_WORLD};try{const r=await fetch("metadata.json");if(r.ok){const j=await r.json();meta={...meta,...{minMcX:j.minMcX,maxMcX:j.maxMcX,minMcZ:j.minMcZ,maxMcZ:j.maxMcZ,minLat:j.minGeoLat,maxLat:j.maxGeoLat,minLon:j.minGeoLon,maxLon:j.maxGeoLon}}}}catch{}await loadWorld("arnis_world_map.png",meta);note("Auto-load succeeded. Click Enter Loaded World.");return true}catch(err){console.error(err);setReadyUi(false,"auto-load failed");note("Auto-load failed. Use the Manual Map Loader and pick <code>arnis_world_map.png</code>.");return false}}
     function lock(){view.requestPointerLock&&view.requestPointerLock()}
     function startExplorer(){if(!state.ready){note("Load a map first.");return}$("menu").style.display="none";state.started=true;lock();note("Explorer started. Use WASD to move, mouse to look, Shift to sprint.");}
     function on(id,handler){const el=$(id);if(el)el.onclick=handler}
