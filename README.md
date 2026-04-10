@@ -23,6 +23,9 @@ Note: GitHub reported that workflow runs are currently blocked by an account bil
 - Manual file loader for local browser security restrictions
 - Same-folder auto-load when the browser allows it
 - Embedded fallback metadata for the included sample world
+- Quality presets for faster or denser terrain rendering
+- Landmark jump chips and minimap click-to-teleport
+- Reopenable in-app menu and fullscreen toggle
 - Agent-facing notes for future maintenance
 
 ## What it is not
@@ -46,6 +49,7 @@ The explorer approximates terrain from `arnis_world_map.png` and uses `metadata.
 - `public/arnis_world_map.png`
 - `public/metadata.json`
 - `public/icon.png`
+- `AGENT_GUIDE.md`
 - `AGENT_NOTES.md`
 - `launch-local.ps1`
 
@@ -98,10 +102,15 @@ If GitHub Actions are unavailable, see `DEPLOYMENT.md` for Netlify, Cloudflare P
 - `F`: toggle fly mode
 - `Space` / `Ctrl`: rise and fall in fly mode
 - `R`: reset camera
+- `Esc`: reopen the menu
+- Minimap click: teleport
+- Landmark chips: jump to preset locations
 
 ## Notes For Future Work
 
-Read `AGENT_NOTES.md` first. It explains:
+Read `AGENT_GUIDE.md` first. `AGENT_NOTES.md` is kept for older context, but `AGENT_GUIDE.md` is the preferred agent entrypoint.
+
+It explains:
 
 - why local file loading fails in some browsers
 - how the fallback file picker works
