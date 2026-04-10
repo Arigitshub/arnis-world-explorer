@@ -42,6 +42,8 @@ The explorer approximates terrain from `arnis_world_map.png` and uses `metadata.
 - `.github/workflows/deploy-pages.yml`
 - `.github/ISSUE_TEMPLATE/`
 - `DEPLOYMENT.md`
+- `PROJECT_STATE.md`
+- `ROADMAP.md`
 - `CONTRIBUTING.md`
 - `CODE_OF_CONDUCT.md`
 - `PULL_REQUEST_TEMPLATE.md`
@@ -142,6 +144,11 @@ It explains:
 - how the fallback file picker works
 - how terrain is inferred from the top-down image
 - which assumptions are embedded for this sample world
+
+For durable project continuity:
+
+- read `PROJECT_STATE.md` for the current live setup and recovery checklist
+- read `ROADMAP.md` for the next likely improvements
 
 ## Community
 
