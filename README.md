@@ -12,10 +12,8 @@ This project is a polished local viewer for an exported Arnis map image and meta
 ## Live Links
 
 - Repo: `https://github.com/Arigitshub/arnis-world-explorer`
-- Live demo: `https://arnis-world-explorer-20260410.surge.sh`
-- Intended Pages URL: `https://arigitshub.github.io/arnis-world-explorer/`
-
-Note: GitHub reported that workflow runs are currently blocked by an account billing issue, so the Pages deploy will not go live until that account issue is resolved.
+- GitHub Pages: `https://arigitshub.github.io/arnis-world-explorer/`
+- Backup live demo: `https://arnis-world-explorer-20260410.surge.sh`
 
 ## What it is
 
@@ -99,19 +97,17 @@ If Python is available, the script starts a local static server on `http://local
 
 ## GitHub Pages
 
-The repository is set up for GitHub Pages deployment through Actions.
+The repository now publishes through branch-based GitHub Pages from `main:/docs`.
 
-It also contains a `/docs` mirror of the static app so Pages can be switched to branch-based publishing if Actions are unavailable.
+The repo still contains a workflow for Actions-based publishing, but the reliable fallback is the `/docs` mirror of the static app.
 
 When the repo exists on GitHub:
 
 1. Push the repository to `main`
-2. In GitHub settings, set Pages to use GitHub Actions
-3. The workflow in `.github/workflows/deploy-pages.yml` will publish the contents of `public/`
+2. Keep Pages source set to `main` and `/docs`
+3. GitHub will publish the site from `docs/index.html`
 
-The published site entrypoint is `public/index.html`.
-
-If GitHub Actions are unavailable, see `DEPLOYMENT.md` for Netlify, Cloudflare Pages, and local static server options.
+If Pages ever needs an alternate host, see `DEPLOYMENT.md` for Surge, Netlify, Cloudflare Pages, and local static server options.
 
 ## Controls
 

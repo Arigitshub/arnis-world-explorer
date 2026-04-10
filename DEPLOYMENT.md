@@ -2,7 +2,9 @@
 
 ## Current Situation
 
-The repo is configured for GitHub Pages through Actions, but GitHub reported that the account is locked due to a billing issue, so workflow-based deployment cannot start until that account issue is resolved.
+The repo is live on GitHub Pages using branch-based publishing from `main:/docs`.
+
+Backup hosting also exists on Surge.
 
 ## Hosting Options
 
@@ -20,17 +22,15 @@ surge D:\arnis-world-explorer\public arnis-world-explorer-20260410.surge.sh
 
 ### GitHub Pages
 
-Use this when the account billing issue is fixed.
-
-- Repository already contains `.github/workflows/deploy-pages.yml`
-- Site root is `public/`
-- Homepage should be `https://arigitshub.github.io/arnis-world-explorer/`
+- Published URL: `https://arigitshub.github.io/arnis-world-explorer/`
+- Source branch: `main`
+- Source folder: `/docs`
 
 ### GitHub Pages Without Actions
 
 This repo also contains a `docs/` mirror of the static site.
 
-If Actions are blocked but GitHub Pages branch publishing still works, set:
+If Actions are blocked, keep Pages configured as:
 
 - Source branch: `main`
 - Folder: `/docs`
