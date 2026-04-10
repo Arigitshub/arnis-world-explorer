@@ -46,6 +46,7 @@ The explorer approximates terrain from `arnis_world_map.png` and uses `metadata.
 - `CONTRIBUTING.md`
 - `CODE_OF_CONDUCT.md`
 - `PULL_REQUEST_TEMPLATE.md`
+- `SECURITY.md`
 - `LICENSE`
 - `public/index.html`
 - `public/arnis_world_map.png`
@@ -83,6 +84,16 @@ python -m http.server 8080
 ```
 
 Then open `http://localhost:8080`.
+
+### Local launcher script
+
+Run:
+
+```powershell
+.\launch-local.ps1
+```
+
+If Python is available, the script starts a local static server on `http://localhost:8080` and opens the browser there. If Python is missing, it falls back to opening the HTML file directly.
 
 ## GitHub Pages
 
@@ -136,4 +147,5 @@ It explains:
 
 - See `CONTRIBUTING.md` for contribution workflow
 - See `CODE_OF_CONDUCT.md` for participation standards
+- See `SECURITY.md` for security reporting guidance
 - Use the issue templates for bugs and feature requests
