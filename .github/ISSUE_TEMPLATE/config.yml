@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project notes
+    url: ./AGENT_NOTES.md
+    about: Read the architecture and loading notes before filing a deep technical issue.
+
