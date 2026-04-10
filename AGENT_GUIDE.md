@@ -93,6 +93,9 @@ The current app supports:
 - quality presets
 - reopenable menu
 - fullscreen toggle
+- touch movement buttons
+- touch look pad
+- service-worker registration on hosted deployments
 
 ## Safe Improvement Order
 

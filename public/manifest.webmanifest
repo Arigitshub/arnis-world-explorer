@@ -1,0 +1,16 @@
+{
+  "name": "Arnis World Explorer",
+  "short_name": "Arnis Explorer",
+  "description": "Browser-based first-person explorer for an Arnis-generated world image.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

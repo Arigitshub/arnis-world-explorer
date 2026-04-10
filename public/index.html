@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Arnis World 2 Explorer</title>
+  <meta name="theme-color" content="#07111f">
+  <link rel="manifest" href="manifest.webmanifest">
   <style>
     :root{color-scheme:dark;--bg:#07111f;--panel:rgba(10,18,34,.72);--panel2:rgba(10,18,34,.9);--line:rgba(148,163,184,.18);--text:#edf4ff;--muted:#98abc7;--green:#4ade80;--blue:#60a5fa;--pink:#fb7185;--shadow:0 24px 60px rgba(0,0,0,.35)}
     *{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;font-family:Segoe UI,system-ui,sans-serif;background:radial-gradient(circle at 15% 15%,rgba(96,165,250,.22),transparent 28%),radial-gradient(circle at 85% 10%,rgba(251,113,133,.15),transparent 24%),linear-gradient(180deg,#0c1730 0%,#04070f 100%);color:var(--text)}
@@ -45,6 +47,17 @@
     .loader h3{margin:0 0 8px;font-size:1rem}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
     input[type=file]{display:none}.tiny{font-size:.84rem;color:var(--muted)}
     .pulse{animation:pulse 2.4s ease-in-out infinite}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+    .touch-ui{position:absolute;inset:auto 14px 14px 14px;display:none;z-index:3;pointer-events:none;justify-content:space-between;align-items:end;gap:16px}
+    .touch-cluster,.touch-look{pointer-events:auto}
+    .touch-cluster{display:grid;grid-template-columns:64px 64px 64px;grid-template-rows:64px 64px 64px;gap:8px}
+    .touch-btn,.touch-look,.touch-stack button{user-select:none;-webkit-user-select:none;touch-action:none;border:1px solid rgba(148,163,184,.18);background:rgba(8,15,28,.62);backdrop-filter:blur(14px);color:var(--text);border-radius:18px;box-shadow:var(--shadow)}
+    .touch-btn{font:inherit;font-size:1.1rem}
+    .touch-btn[data-active="true"],.touch-stack button[data-active="true"]{background:rgba(37,99,235,.45);border-color:rgba(96,165,250,.6)}
+    .touch-look{width:min(38vw,240px);height:min(32vh,240px);display:grid;place-items:center;color:var(--muted);font-size:.86rem;text-align:center;padding:16px}
+    .touch-stack{display:grid;gap:8px;pointer-events:auto}
+    .touch-stack button{min-width:72px;min-height:56px;font:inherit}
+    .touch-stack .tiny{background:rgba(8,15,28,.52);padding:8px 10px;border-radius:14px;border:1px solid rgba(148,163,184,.12)}
+    @media (pointer:coarse),(max-width:860px){.touch-ui{display:flex}}
     @media (max-width:860px){.hero{grid-template-columns:1fr}.title{font-size:1.8rem}#minimap{width:140px;height:140px}.hud{width:min(340px,calc(100vw - 24px));left:12px;top:12px}#msg{right:12px;bottom:12px}}
   </style>
 </head>
@@ -79,6 +92,25 @@
 
     <section id="minimap" class="glass"><canvas id="mini" class="mini" width="256" height="256"></canvas></section>
     <section id="msg" class="glass">Preparing map bootstrap.</section>
+    <section class="touch-ui" id="touchUi">
+      <div class="touch-cluster">
+        <div></div>
+        <button class="touch-btn" data-key="KeyW">W</button>
+        <div></div>
+        <button class="touch-btn" data-key="KeyA">A</button>
+        <button class="touch-btn" data-key="KeyS">S</button>
+        <button class="touch-btn" data-key="KeyD">D</button>
+        <div></div>
+        <button class="touch-btn" data-key="ShiftLeft">Run</button>
+        <div></div>
+      </div>
+      <div class="touch-stack">
+        <button class="touch-btn" data-key="Space">Up</button>
+        <button class="touch-btn" data-key="ControlLeft">Down</button>
+        <div class="tiny">Touch look pad</div>
+      </div>
+      <div class="touch-look" id="touchLook">Drag here to look around</div>
+    </section>
 
     <section id="menu">
       <div class="menu-card glass pulse">
@@ -129,7 +161,7 @@
   <script>
     const DEFAULT_WORLD={img:"arnis_world_map.png",w:1458,h:1484,minMcX:0,maxMcX:1457,minMcZ:0,maxMcZ:1483,minLat:40.701789,maxLat:40.715127,minLon:-73.972278,maxLon:-73.954983};
     const LANDMARKS=[{name:"Williamsburg Bridge",x:.08,z:.44},{name:"Domino Park",x:.78,z:.56},{name:"McCarren Park",x:.62,z:.15},{name:"East River Edge",x:.92,z:.5},{name:"South Williamsburg",x:.54,z:.8}];
-    const state={started:false,ready:false,last:performance.now(),keys:Object.create(null),terrain:[],gw:0,gh:0,sx:1,sz:1,pix:null,imageUrl:DEFAULT_WORLD.img,meta:{...DEFAULT_WORLD},pickedMap:null,pickedMeta:null,quality:"medium"};
+    const state={started:false,ready:false,last:performance.now(),keys:Object.create(null),terrain:[],gw:0,gh:0,sx:1,sz:1,pix:null,imageUrl:DEFAULT_WORLD.img,meta:{...DEFAULT_WORLD},pickedMap:null,pickedMeta:null,quality:"medium",touchLookId:null,lastTouchX:0,lastTouchY:0};
     const cam={x:DEFAULT_WORLD.w/2,z:DEFAULT_WORLD.h/2,y:32,yaw:.3,pitch:-.12,fly:false};
     const $=id=>document.getElementById(id),view=$("view"),ctx=view.getContext("2d"),mini=$("mini"),mctx=mini.getContext("2d"),buf=document.createElement("canvas"),bctx=buf.getContext("2d",{willReadFrequently:true}),img=new Image();
     const clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),lerp=(a,b,t)=>a+(b-a)*t,rgbMul=(r,g,b,m)=>`rgb(${clamp(Math.round(r*m),0,255)},${clamp(Math.round(g*m),0,255)},${clamp(Math.round(b*m),0,255)})`,note=t=>$("msg").innerHTML=t;
@@ -171,6 +203,9 @@
     function toggleFullscreen(){const root=document.documentElement;if(document.fullscreenElement){document.exitFullscreen&&document.exitFullscreen();return}root.requestFullscreen&&root.requestFullscreen()}
     function startExplorer(){if(!state.ready){note("Load a map first.");return}setMenu(false);state.started=true;lock();note("Explorer started. Use WASD to move, mouse to look, Shift to sprint.");}
     function on(id,handler){const el=$(id);if(el)el.onclick=handler}
+    function bindTouchButton(btn){const key=btn.dataset.key;if(!key)return;const set=v=>{state.keys[key]=v;btn.dataset.active=v?"true":"false"};btn.addEventListener("pointerdown",e=>{e.preventDefault();set(true)});["pointerup","pointercancel","pointerleave"].forEach(type=>btn.addEventListener(type,()=>set(false)))}
+    function bindTouchLook(){const pad=$("touchLook");if(!pad)return;pad.addEventListener("pointerdown",e=>{state.touchLookId=e.pointerId;state.lastTouchX=e.clientX;state.lastTouchY=e.clientY;pad.setPointerCapture&&pad.setPointerCapture(e.pointerId)});pad.addEventListener("pointermove",e=>{if(state.touchLookId!==e.pointerId)return;const dx=e.clientX-state.lastTouchX,dy=e.clientY-state.lastTouchY;state.lastTouchX=e.clientX;state.lastTouchY=e.clientY;cam.yaw+=dx*.01;cam.pitch=clamp(cam.pitch-dy*.008,-1.25,.35)});const stop=e=>{if(state.touchLookId===e.pointerId)state.touchLookId=null};pad.addEventListener("pointerup",stop);pad.addEventListener("pointercancel",stop)}
+    function registerServiceWorker(){if(location.protocol==="file:"||!("serviceWorker" in navigator))return;navigator.serviceWorker.register("sw.js").catch(err=>console.error("service worker",err))}
     function bind(){resize();renderLandmarks();addEventListener("resize",resize);on("enterWorld",startExplorer);on("capture",lock);on("reset",()=>resetCamera());on("fly",()=>{cam.fly=!cam.fly;updateHud();note(cam.fly?"Fly mode enabled.":"Hover walk enabled.")});on("menuToggle",()=>setMenu(true));on("fullscreen",toggleFullscreen);
       $("qualityPreset").onchange=e=>{state.quality=e.target.value;if(state.ready){buildTerrain();updateHud();note(`Quality set to ${state.quality}. Terrain rebuilt.`)}};
       $("autoStart").onclick=async()=>{const ok=await tryAuto();if(ok){const enter=$("menuEnter");if(enter)enter.textContent="Enter Loaded World"}};$("manualStart").onclick=async()=>{try{await loadWorld(DEFAULT_WORLD.img,DEFAULT_WORLD);note("Default local world loaded. Click Enter Loaded World if it looks right.")}catch(e){console.error(e);note("Default local load failed. Use the file picker.")}};
@@ -183,7 +218,10 @@
       document.addEventListener("pointerlockchange",()=>{$("capture").textContent=document.pointerLockElement===view?"Mouse Captured":"Capture Mouse"});
       document.addEventListener("mousemove",e=>{if(document.pointerLockElement!==view||!state.started)return;cam.yaw+=e.movementX*.0024;cam.pitch=clamp(cam.pitch-e.movementY*.0018,-1.25,.35)});
       addEventListener("keydown",e=>{if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code))e.preventDefault();state.keys[e.code]=true;if(e.code==="KeyR")resetCamera();if(e.code==="KeyF"){cam.fly=!cam.fly;updateHud();note(cam.fly?"Fly mode enabled.":"Hover walk enabled.")}if(e.code==="Escape")setMenu(true);});
-      addEventListener("keyup",e=>state.keys[e.code]=false)
+      addEventListener("keyup",e=>state.keys[e.code]=false);
+      document.querySelectorAll(".touch-btn").forEach(bindTouchButton);
+      bindTouchLook();
+      registerServiceWorker();
     }
     bind();
     if(location.protocol!=="file:"){

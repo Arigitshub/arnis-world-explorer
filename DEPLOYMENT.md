@@ -60,3 +60,12 @@ The project is entirely static:
 - PNG and JSON assets
 
 No backend or build pipeline is required.
+
+## PWA Notes
+
+Hosted deployments should also publish:
+
+- `manifest.webmanifest`
+- `sw.js`
+
+These enable installable-app behavior and offline caching on `https` origins. They do not run when the app is opened directly from `file:`.

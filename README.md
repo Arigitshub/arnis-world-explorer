@@ -26,6 +26,8 @@ Note: GitHub reported that workflow runs are currently blocked by an account bil
 - Quality presets for faster or denser terrain rendering
 - Landmark jump chips and minimap click-to-teleport
 - Reopenable in-app menu and fullscreen toggle
+- Touch controls for phones and tablets
+- Installable static app shell with offline caching on hosted deployments
 - Agent-facing notes for future maintenance
 
 ## What it is not
@@ -49,6 +51,8 @@ The explorer approximates terrain from `arnis_world_map.png` and uses `metadata.
 - `public/arnis_world_map.png`
 - `public/metadata.json`
 - `public/icon.png`
+- `public/manifest.webmanifest`
+- `public/sw.js`
 - `AGENT_GUIDE.md`
 - `AGENT_NOTES.md`
 - `launch-local.ps1`
@@ -105,6 +109,17 @@ If GitHub Actions are unavailable, see `DEPLOYMENT.md` for Netlify, Cloudflare P
 - `Esc`: reopen the menu
 - Minimap click: teleport
 - Landmark chips: jump to preset locations
+- Touch buttons: move, run, rise, fall
+- Touch look pad: drag to rotate camera
+
+## PWA Behavior
+
+On hosted deployments over `https`, the app registers a service worker and can be installed like a lightweight app shell.
+
+- Manifest: `public/manifest.webmanifest`
+- Offline cache: `public/sw.js`
+
+Direct `file:` use still works, but service workers are intentionally skipped there because browsers do not allow them for local file origins.
 
 ## Notes For Future Work
 
